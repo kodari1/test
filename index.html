@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로지컬 미션: 잃어버린 비트의 비밀</title>
+  <style>
+    body { font-family: 'Pretendard', sans-serif; background-color: #0d1117; color: #f0f6fc; text-align: center; padding: 2rem; }
+    h1 { color: #58a6ff; }
+    .card { background: #161b22; padding: 2rem; border-radius: 20px; box-shadow: 0 0 20px rgba(88,166,255,0.3); max-width: 500px; margin: 2rem auto; }
+    input { padding: 0.7rem; border-radius: 10px; border: none; width: 80%; margin-top: 1rem; }
+    button { margin-top: 1rem; padding: 0.7rem 1.5rem; background-color: #238636; border: none; border-radius: 10px; color: white; cursor: pointer; font-size: 1rem; }
+    button:hover { background-color: #2ea043; }
+  </style>
+</head>
+<body>
+  <h1>🔐 로지컬 미션: 잃어버린 비트의 비밀</h1>
+  <div id="stage1" class="card">
+    <h2>🧩 미션 1 — 비트키를 찾아라!</h2>
+    <p>아래의 이진수를 ASCII로 변환하세요:</p>
+    <p><code>01001000 01000101 01001100 01001100 01001111</code></p>
+    <input type="text" id="answer1" placeholder="정답 입력 (대문자)" />
+    <button onclick="checkStage1()">제출</button>
+    <p id="result1"></p>
+  </div>
+
+  <div id="stage2" class="card" style="display:none;">
+    <h2>📡 미션 2 — 신호키를 찾아라!</h2>
+    <p>아래의 모스 부호를 해독하세요:</p>
+    <p><code>.... . .-.. .--.</code></p>
+    <input type="text" id="answer2" placeholder="정답 입력 (대문자)" />
+    <button onclick="checkStage2()">제출</button>
+    <p id="result2"></p>
+  </div>
+
+  <div id="finalStage" class="card" style="display:none;">
+    <h2>🎉 서버 복구 성공!</h2>
+    <p>축하합니다! 두 개의 키를 모두 획득했습니다.</p>
+    <p>서버 복구 코드: <strong>HELLOHELP</strong></p>
+    <p>이 코드를 스태프에게 보여주면 선물을 받을 수 있습니다 🎁</p>
+  </div>
+
+  <script>
+    function checkStage1() {
+      const ans = document.getElementById('answer1').value.trim().toUpperCase();
+      const result = document.getElementById('result1');
+      if (ans === 'HELLO') {
+        result.innerText = '✅ 정답입니다! 다음 미션으로 이동합니다...';
+        setTimeout(() => {
+          document.getElementById('stage1').style.display = 'none';
+          document.getElementById('stage2').style.display = 'block';
+        }, 1200);
+      } else {
+        result.innerText = '❌ 틀렸습니다. 다시 시도하세요!';
+      }
+    }
+
+    function checkStage2() {
+      const ans = document.getElementById('answer2').value.trim().toUpperCase();
+      const result = document.getElementById('result2');
+      if (ans === 'HELP') {
+        result.innerText = '✅ 정답입니다! 서버 복구 완료...';
+        setTimeout(() => {
+          document.getElementById('stage2').style.display = 'none';
+          document.getElementById('finalStage').style.display = 'block';
+        }, 1200);
+      } else {
+        result.innerText = '❌ 다시 시도하세요!';
+      }
+    }
+  </script>
+</body>
+</html>
