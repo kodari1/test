@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+
+    <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>귀여운 두더지 잡기 게임 v6</title>
+<title>귀여운 두더지 잡기 게임 v7</title>
 <style>
   body {
     text-align: center;
@@ -190,23 +191,27 @@
     hole.appendChild(mole);
     popSound.play();
 
-    mole.addEventListener("click", () => {
+    // 클릭/터치 이벤트 공통 함수
+    function hitMole(e) {
+      e.preventDefault(); // 터치 시 스크롤 방지
       if (!gameRunning) return;
       score++;
       scoreDisplay.textContent = score;
       hitSound.play();
       mole.remove();
-    });
+    }
 
-    // 🟢 난이도 더 낮춤 → 두더지 오래 머물고, 다음 등장 간격 넉넉하게
+    mole.addEventListener("click", hitMole);
+    mole.addEventListener("touchstart", hitMole);
+
     setTimeout(() => {
       if (hole.contains(mole)) {
         hole.removeChild(mole);
         missSound.play();
       }
-    }, 1300); // 유지 시간 ↑ (v5: 1000ms → v6: 1300ms)
+    }, 1300); // 두더지 유지 시간
 
-    setTimeout(spawnMoles, Math.random() * 1000 + 800); // 등장 간격 ↑ (v5: 500~1300ms → v6: 800~1800ms)
+    setTimeout(spawnMoles, Math.random() * 1000 + 800); // 등장 간격
   }
 </script>
 </body>
