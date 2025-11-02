@@ -1,73 +1,213 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>로지컬 미션: 잃어버린 비트의 비밀</title>
-  <style>
-    body { font-family: 'Pretendard', sans-serif; background-color: #0d1117; color: #f0f6fc; text-align: center; padding: 2rem; }
-    h1 { color: #58a6ff; }
-    .card { background: #161b22; padding: 2rem; border-radius: 20px; box-shadow: 0 0 20px rgba(88,166,255,0.3); max-width: 500px; margin: 2rem auto; }
-    input { padding: 0.7rem; border-radius: 10px; border: none; width: 80%; margin-top: 1rem; }
-    button { margin-top: 1rem; padding: 0.7rem 1.5rem; background-color: #238636; border: none; border-radius: 10px; color: white; cursor: pointer; font-size: 1rem; }
-    button:hover { background-color: #2ea043; }
-  </style>
+<meta charset="UTF-8">
+<title>귀여운 두더지 잡기 게임 v6</title>
+<style>
+  body {
+    text-align: center;
+    background: #bde0fe;
+    font-family: "Jua", sans-serif;
+    overflow: hidden;
+  }
+
+  h1 {
+    color: #333;
+  }
+
+  #game-info {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+  }
+
+  #game-area {
+    position: relative;
+    width: 400px;
+    height: 300px;
+    margin: 0 auto;
+    background: #8ecae6;
+    border: 5px solid #023047;
+    border-radius: 15px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .hole {
+    position: relative;
+    background: #457b9d;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .mole {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: #8d5524;
+    border-radius: 50% 50% 40% 40%;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: popUp 1s ease-in-out;
+    cursor: pointer;
+  }
+
+  .mole::before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 35px;
+    background: #c68642;
+    border-radius: 50%;
+    top: 10px;
+    left: 10px;
+  }
+
+  .eye {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: black;
+    border-radius: 50%;
+    top: 20px;
+  }
+
+  .eye.left { left: 18px; }
+  .eye.right { right: 18px; }
+
+  .mouth {
+    position: absolute;
+    width: 20px;
+    height: 5px;
+    background: black;
+    border-radius: 2px;
+    bottom: 15px;
+    left: 25px;
+  }
+
+  @keyframes popUp {
+    0% { bottom: -80px; }
+    50% { bottom: 20px; }
+    100% { bottom: -80px; }
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 1em;
+    background: #ffb703;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #fb8500;
+  }
+</style>
 </head>
 <body>
-  <h1>🔐 로지컬 미션: 잃어버린 비트의 비밀</h1>
-  <div id="stage1" class="card">
-    <h2>🧩 미션 1 — 비트키를 찾아라!</h2>
-    <p>아래의 이진수를 ASCII로 변환하세요:</p>
-    <p><code>01001000 01000101 01001100 01001100 01001111</code></p>
-    <input type="text" id="answer1" placeholder="정답 입력 (대문자)" />
-    <button onclick="checkStage1()">제출</button>
-    <p id="result1"></p>
-  </div>
 
-  <div id="stage2" class="card" style="display:none;">
-    <h2>📡 미션 2 — 신호키를 찾아라!</h2>
-    <p>아래의 모스 부호를 해독하세요:</p>
-    <p><code>.... . .-.. .--.</code></p>
-    <input type="text" id="answer2" placeholder="정답 입력 (대문자)" />
-    <button onclick="checkStage2()">제출</button>
-    <p id="result2"></p>
-  </div>
+<h1>🐹 귀여운 두더지 잡기 🕹️</h1>
+<div id="game-info">
+  제한시간: <span id="time">20</span>초 | 목표: 10마리 | 잡은 두더지: <span id="score">0</span>마리
+</div>
+<div id="game-area"></div>
+<button id="start-btn">게임 시작</button>
 
-  <div id="finalStage" class="card" style="display:none;">
-    <h2>🎉 서버 복구 성공!</h2>
-    <p>축하합니다! 두 개의 키를 모두 획득했습니다.</p>
-    <p>서버 복구 코드: <strong>HELLOHELP</strong></p>
-    <p>이 코드를 스태프에게 보여주면 선물을 받을 수 있습니다 🎁</p>
-  </div>
+<!-- 사운드 효과 -->
+<audio id="pop-sound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+<audio id="hit-sound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="miss-sound" src="https://actions.google.com/sounds/v1/cartoon/metal_thud_and_clang.ogg"></audio>
 
-  <script>
-    function checkStage1() {
-      const ans = document.getElementById('answer1').value.trim().toUpperCase();
-      const result = document.getElementById('result1');
-      if (ans === 'HELLO') {
-        result.innerText = '✅ 정답입니다! 다음 미션으로 이동합니다...';
-        setTimeout(() => {
-          document.getElementById('stage1').style.display = 'none';
-          document.getElementById('stage2').style.display = 'block';
-        }, 1200);
-      } else {
-        result.innerText = '❌ 틀렸습니다. 다시 시도하세요!';
+<script>
+  const gameArea = document.getElementById("game-area");
+  const timeDisplay = document.getElementById("time");
+  const scoreDisplay = document.getElementById("score");
+  const startBtn = document.getElementById("start-btn");
+  const popSound = document.getElementById("pop-sound");
+  const hitSound = document.getElementById("hit-sound");
+  const missSound = document.getElementById("miss-sound");
+
+  let score = 0;
+  let timeLeft = 20;
+  let timer;
+  let gameRunning = false;
+
+  startBtn.addEventListener("click", startGame);
+
+  // 9개의 구멍 생성
+  for (let i = 0; i < 9; i++) {
+    const hole = document.createElement("div");
+    hole.classList.add("hole");
+    gameArea.appendChild(hole);
+  }
+
+  const holes = document.querySelectorAll(".hole");
+
+  function startGame() {
+    score = 0;
+    timeLeft = 20;
+    gameRunning = true;
+    scoreDisplay.textContent = score;
+    timeDisplay.textContent = timeLeft;
+    startBtn.disabled = true;
+    timer = setInterval(updateTime, 1000);
+    spawnMoles();
+  }
+
+  function updateTime() {
+    timeLeft--;
+    timeDisplay.textContent = timeLeft;
+    if (timeLeft <= 0) endGame();
+  }
+
+  function endGame() {
+    clearInterval(timer);
+    gameRunning = false;
+    startBtn.disabled = false;
+    alert(`게임 종료! 총 ${score}마리 잡았어요!`);
+  }
+
+  function spawnMoles() {
+    if (!gameRunning) return;
+    const hole = holes[Math.floor(Math.random() * holes.length)];
+    const mole = document.createElement("div");
+    mole.classList.add("mole");
+
+    const leftEye = document.createElement("div");
+    leftEye.classList.add("eye", "left");
+    const rightEye = document.createElement("div");
+    rightEye.classList.add("eye", "right");
+    const mouth = document.createElement("div");
+    mouth.classList.add("mouth");
+    mole.append(leftEye, rightEye, mouth);
+
+    hole.appendChild(mole);
+    popSound.play();
+
+    mole.addEventListener("click", () => {
+      if (!gameRunning) return;
+      score++;
+      scoreDisplay.textContent = score;
+      hitSound.play();
+      mole.remove();
+    });
+
+    // 🟢 난이도 더 낮춤 → 두더지 오래 머물고, 다음 등장 간격 넉넉하게
+    setTimeout(() => {
+      if (hole.contains(mole)) {
+        hole.removeChild(mole);
+        missSound.play();
       }
-    }
+    }, 1300); // 유지 시간 ↑ (v5: 1000ms → v6: 1300ms)
 
-    function checkStage2() {
-      const ans = document.getElementById('answer2').value.trim().toUpperCase();
-      const result = document.getElementById('result2');
-      if (ans === 'HELP') {
-        result.innerText = '✅ 정답입니다! 서버 복구 완료...';
-        setTimeout(() => {
-          document.getElementById('stage2').style.display = 'none';
-          document.getElementById('finalStage').style.display = 'block';
-        }, 1200);
-      } else {
-        result.innerText = '❌ 다시 시도하세요!';
-      }
-    }
-  </script>
+    setTimeout(spawnMoles, Math.random() * 1000 + 800); // 등장 간격 ↑ (v5: 500~1300ms → v6: 800~1800ms)
+  }
+</script>
 </body>
 </html>
